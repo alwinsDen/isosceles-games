@@ -1,0 +1,7 @@
+[workspace]
+name = "isosceles-games"
+members = ["v-26-2026"]
+resolver = "3"
+
+[workspace.dependencies]
+bevy = { path = "../bevy" }
