@@ -1,11 +1,7 @@
 [package]
-name = "v-26-2026"
+name = "custom_plugins_bevy"
 version = "0.1.0"
 edition = "2024"
 
-[profile.dev]
-opt-level = 1
-
 [dependencies]
 bevy = { workspace = true }
-custom_plugins_bevy = {workspace = true}
