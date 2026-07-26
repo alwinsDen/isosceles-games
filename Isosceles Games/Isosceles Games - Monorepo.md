@@ -1,3 +1,5 @@
+# Isosceles Games - Monorepo
+
 **Collection of games made with ECS-model of the Bevy Engine.** 
 
 *Current scope:* 
