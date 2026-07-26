@@ -1,4 +1,4 @@
-# Isosceles Games - Monorepo
+# Isosceles Games - Monorepos
 
 **Collection of games made with ECS-model of the Bevy Engine.** 
 

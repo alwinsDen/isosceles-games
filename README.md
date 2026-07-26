@@ -1,1 +1,1 @@
-Isosceles Games/Isosceles Games - Monorepo.md
+_docs_Isosceles_Games/Isosceles Games - Monorepo.md
