@@ -1,0 +1,8 @@
+[package]
+name = "isosceles-cli"
+version = "0.0.1"
+edition = "2024"
+
+[dependencies]
+ratatui = {workspace = true, features = ["serde"]}
+color-eyre = {workspace = true}

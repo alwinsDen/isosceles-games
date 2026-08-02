@@ -4,7 +4,6 @@ use crate::utils::support_utils::dev_pointer_grip;
 use bevy::{
     DefaultPlugins,
     app::{App, Startup, Update},
-    prelude::SpawnListSystem,
 };
 use custom_plugins_bevy::hello_plugin::HelloPlugin;
 mod environment_tooling;
@@ -20,7 +19,7 @@ fn main() {
     // global-camera is degined here.
     main_app.add_systems(Startup, camera_global_setup);
     main_app
-        .add_systems(Startup, scene::opening_scene::scene.spawn())
+        .add_systems(Startup, scene::opening_scene::scene)
         //this is a custom plugin created as a seperate rust library.
         .add_plugins(HelloPlugin)
         .run();

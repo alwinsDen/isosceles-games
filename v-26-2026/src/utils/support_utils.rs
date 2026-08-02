@@ -32,11 +32,12 @@ pub fn dev_pointer_grip(
     */
 
     let (camera, camera_transform) = camera_q.into_inner();
-    let Ok(ray) = camera.viewport_to_world(
+    let ray = match camera.viewport_to_world(
         camera_transform,
         Vec2::new(window.width() * 0.95, window.height() * 0.1),
-    ) else {
-        return;
+    ) {
+        Ok(r) => r,
+        Err(_) => return,
     };
     let anchor = ray.origin + ray.direction * 8.0;
     gismoz
