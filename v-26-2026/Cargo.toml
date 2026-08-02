@@ -7,5 +7,5 @@ edition = "2024"
 opt-level = 1
 
 [dependencies]
-bevy = { workspace = true }
+bevy = { workspace = true, features = ["3d"] }
 custom_plugins_bevy = {workspace = true}

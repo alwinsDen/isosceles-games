@@ -1,11 +1,14 @@
 [workspace]
-name = "isosceles-games"
+# commenting for now due to unused warning.
+# name = "isosceles-games"
 members = ["custom_plugins_bevy","v-26-2026"]
 resolver = "3"
 
 [workspace.dependencies]
 # this uses a local instance of the bevy latest builds.
 # ensure local instance upto date. (this might later get replaced by solid LTS version)
-bevy = { path = "../bevy" }
+bevy = { path = "../bevy", default-features = false }
+
 # Custom plugin is a lib-like custom plugin.
 custom_plugins_bevy = {path = "custom_plugins_bevy"}
+ripgrep = "15.2.0"
