@@ -10,6 +10,7 @@ resolver = "3"
 bevy = { path = "../bevy", default-features = false }
 ratatui = "0.30.2"
 color-eyre = "0.6.5"
+ratatui-textarea = "0.9.2"
 
 # Custom plugin is a lib-like custom plugin.
 custom_plugins_bevy = {path = "custom_plugins_bevy"}

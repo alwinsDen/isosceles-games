@@ -1,21 +1,36 @@
-use std::io;
-
+use color_eyre::{
+    Result,
+    eyre::{WrapErr, bail},
+};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
     DefaultTerminal, Frame,
     buffer::Buffer,
-    crossterm,
-    layout::Rect,
-    style::Stylize,
+    crossterm::{self},
+    layout::{Alignment, Constraint, Layout, Rect},
+    style::{Color, Modifier, Style, Stylize},
     symbols::border,
     text::{Line, Text},
-    widgets::{Block, Paragraph, Widget},
+    widgets::{Block, Borders, Paragraph, Widget},
 };
+use ratatui_textarea::TextArea;
+use std::io;
+mod constants;
+use constants::CLI_ART;
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct App {
     counter: u8,
     exit: bool,
+}
+
+//display implementation of the App struct
+impl std::fmt::Display for App {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("App")
+            .field("counter", &self.counter)
+            .finish()
+    }
 }
 
 impl App {
@@ -27,37 +42,51 @@ impl App {
         self.exit = true;
     }
 
-    fn increment(&mut self) {
+    fn increment(&mut self) -> Result<()> {
         self.counter += 1;
+
+        /*
+        a test condition to trigger failure if
+        +ve counter is above 2
+        */
+        if self.counter > 2 {
+            bail!("Counter overflowed!");
+        }
+
+        Ok(())
     }
 
-    fn decrement(&mut self) {
+    fn decrement(&mut self) -> Result<()> {
         self.counter -= 1;
+        Ok(())
     }
 
-    fn handle_key_event(&mut self, key_event: KeyEvent) {
+    fn handle_key_event(&mut self, key_event: KeyEvent) -> Result<()> {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
-            KeyCode::Left => self.decrement(),
-            KeyCode::Right => self.increment(),
+            KeyCode::Esc => self.exit(),
+            KeyCode::Left => self.decrement()?,
+            KeyCode::Right => self.increment()?,
             _ => {}
         }
+        Ok(())
     }
 
-    fn handle_event(&mut self) -> io::Result<()> {
+    fn handle_event(&mut self) -> Result<()> {
         match event::read()? {
-            Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
-                self.handle_key_event(key_event);
-            }
-            _ => {}
-        };
-        Ok(())
+            Event::Key(key_event) if key_event.kind == KeyEventKind::Press => self
+                .handle_key_event(key_event)
+                .wrap_err_with(|| format!("handling error event for -> {key_event:#?}")),
+            _ => Ok(()),
+        }
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
-            self.handle_event()?;
+            self.handle_event()
+                .wrap_err("handle events failed.")
+                .unwrap();
         }
         return Ok(());
     }
@@ -65,33 +94,59 @@ impl App {
 
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let title = Line::from(" Isosceles Games CLI ").bold();
+        let _title = Line::from(" Isosceles Games CLI ").bold();
         let instructions = Line::from(vec![
             //here into() automatically converts the stuff into whatever type is defined in the variable.
-            " Decrement ".into(),
-            "<LEFT>".into(),
-            " Increment ".into(),
-            "<RIGHT>".into(),
             " Quit ".into(),
             "<Q>".into(),
         ]);
         let block = Block::bordered()
-            .title(title.centered())
             .title_bottom(instructions.centered())
-            .border_set(border::THICK);
-        let counter_text = Text::from(vec![Line::from(vec![
-            " Value ".into(),
-            self.counter.to_string().yellow(),
-        ])]);
-        Paragraph::new(counter_text)
-            .centered()
-            .block(block)
-            .render(area, buf);
+            .border_set(border::EMPTY)
+            .bg(Color::from_u32(0x000000));
+        let inner = block.inner(area);
+        block.render(area, buf);
+
+        let [_, banner_area, _, textarea_area, _] = Layout::vertical([
+            Constraint::Fill(1),
+            Constraint::Length(6),
+            Constraint::Length(2),
+            Constraint::Length(4),
+            Constraint::Fill(1),
+        ])
+        .areas(inner);
+
+        let [_, textarea_area, _] = Layout::horizontal([
+            Constraint::Fill(1),
+            Constraint::Length(80),
+            Constraint::Fill(1),
+        ])
+        .areas(textarea_area);
+        let banner_text = Text::styled(
+            CLI_ART.trim_start_matches('\n'),
+            Style::new().fg(Color::Red).add_modifier(Modifier::BOLD),
+        );
+        Paragraph::new(banner_text)
+            .alignment(Alignment::Center)
+            .render(banner_area, buf);
+        let mut textarea = TextArea::from([""]);
+        textarea.set_styled_placeholder(Text::styled(
+            "Run anthing...search for runners.",
+            Style::default().fg(Color::LightRed),
+        ));
+        textarea.set_block(
+            Block::default().borders(Borders::ALL), // .title("Search triggers"),
+        );
+        textarea.render(textarea_area, buf);
     }
 }
 
 fn main() -> io::Result<()> {
-    ratatui::run(|terminal| App::default().run(terminal))
+    let _ = color_eyre::install();
+    let mut terminal = ratatui::init();
+    let app_result = App::default().run(&mut terminal);
+    ratatui::restore();
+    app_result
 }
 
 // _______test section___________
@@ -103,14 +158,35 @@ mod tests {
     #[test]
     fn handle_key_event() {
         let mut app = App::default();
-        app.handle_key_event(KeyCode::Right.into());
+        app.handle_key_event(KeyCode::Right.into()).unwrap();
         assert_eq!(app.counter, 1);
 
-        app.handle_key_event(KeyCode::Left.into());
+        app.handle_key_event(KeyCode::Left.into()).unwrap();
         assert_eq!(app.counter, 0);
 
         let mut app = App::default();
-        app.handle_key_event(KeyCode::Char('q').into());
+        app.handle_key_event(KeyCode::Char('q').into()).unwrap();
         assert!(app.exit);
+    }
+
+    // panic tests
+    #[test]
+    #[should_panic(expected = "attempt to subtract with overflow")]
+    fn handle_key_event_panic() {
+        let mut app = App::default();
+        let _ = app.handle_key_event(KeyCode::Left.into()).unwrap();
+    }
+
+    #[test]
+    fn handle_key_overflow() {
+        let mut app = App::default();
+        app.handle_key_event(KeyCode::Right.into()).unwrap();
+        app.handle_key_event(KeyCode::Right.into()).unwrap();
+        assert_eq!(
+            app.handle_key_event(KeyCode::Right.into())
+                .unwrap_err()
+                .to_string(),
+            "Counter overflowed!"
+        )
     }
 }
