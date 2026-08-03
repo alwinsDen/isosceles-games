@@ -11,7 +11,7 @@ use ratatui::{
     style::{Color, Modifier, Style, Stylize},
     symbols::border,
     text::{Line, Text},
-    widgets::{Block, Borders, Paragraph, Widget},
+    widgets::{Block, Padding, Paragraph, Widget},
 };
 use ratatui_textarea::TextArea;
 use std::io;
@@ -90,6 +90,23 @@ impl App {
         }
         return Ok(());
     }
+
+    /*
+    this is for the debug metrics during the debug mode.
+    */
+    pub fn debug_metrics(&self, debug_area: Rect, buf: &mut Buffer, main_area: &Rect) {
+        let test_area = Text::styled(
+            format!(
+                r#"
+    debug area width: {}
+    main terminal width: {}
+        "#,
+                debug_area.width, main_area.width
+            ),
+            Style::from(Color::Gray),
+        );
+        test_area.render(debug_area, buf);
+    }
 }
 
 impl Widget for &App {
@@ -107,11 +124,11 @@ impl Widget for &App {
         let inner = block.inner(area);
         block.render(area, buf);
 
-        let [_, banner_area, _, textarea_area, _] = Layout::vertical([
+        let [_debug_metrics_area, banner_area, _, textarea_area, _] = Layout::vertical([
             Constraint::Fill(1),
             Constraint::Length(6),
             Constraint::Length(2),
-            Constraint::Length(4),
+            Constraint::Length(6),
             Constraint::Fill(1),
         ])
         .areas(inner);
@@ -131,13 +148,16 @@ impl Widget for &App {
             .render(banner_area, buf);
         let mut textarea = TextArea::from([""]);
         textarea.set_styled_placeholder(Text::styled(
-            "Run anthing...search for runners.",
-            Style::default().fg(Color::LightRed),
+            format!("Run anthing...search for runners."),
+            Style::default().fg(Color::White),
         ));
-        textarea.set_block(
-            Block::default().borders(Borders::ALL), // .title("Search triggers"),
-        );
-        textarea.render(textarea_area, buf);
+        buf.set_style(textarea_area, Style::new().bg(Color::from_u32(0x4f4f4f)));
+        let padded_area = Block::new()
+            .padding(Padding::new(2, 2, 1, 1))
+            .inner(textarea_area);
+        textarea.render(padded_area, buf);
+        #[cfg(debug_assertions)]
+        self.debug_metrics(_debug_metrics_area, buf, &area);
     }
 }
 
