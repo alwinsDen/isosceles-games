@@ -14,7 +14,7 @@ use ratatui::{
     widgets::{Block, Padding, Paragraph, Widget},
 };
 use ratatui_textarea::TextArea;
-use std::io;
+use std::{io, time::Duration};
 mod constants;
 use constants::CLI_ART;
 
@@ -84,9 +84,19 @@ impl App {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
-            self.handle_event()
-                .wrap_err("handle events failed.")
-                .unwrap();
+            /*
+            Poll with a timeout instead of blocking on `event::read`.
+            Some terminals (e.g. Warp) settle their alt-screen size
+            shortly after launch without sending a resize event, so the
+            first frame is drawn at a stale size. The periodic redraw
+            lets ratatui's autoresize snap to the real terminal size
+            without waiting for a keypress.
+            */
+            if event::poll(Duration::from_millis(100))? {
+                self.handle_event()
+                    .wrap_err("handle events failed.")
+                    .unwrap();
+            }
         }
         return Ok(());
     }
@@ -141,7 +151,9 @@ impl Widget for &App {
         .areas(textarea_area);
         let banner_text = Text::styled(
             CLI_ART.trim_start_matches('\n'),
-            Style::new().fg(Color::Red).add_modifier(Modifier::BOLD),
+            Style::new()
+                .fg(Color::from_u32(0xd64f00))
+                .add_modifier(Modifier::BOLD),
         );
         Paragraph::new(banner_text)
             .alignment(Alignment::Center)
