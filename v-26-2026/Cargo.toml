@@ -8,4 +8,4 @@ opt-level = 1
 
 [dependencies]
 bevy = { workspace = true, features = ["3d"] }
-custom_plugins_bevy = {workspace = true}
+custom-plugins-bevy = {workspace = true}

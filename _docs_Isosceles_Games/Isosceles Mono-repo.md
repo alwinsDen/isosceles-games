@@ -3,7 +3,7 @@
 **Collection of games made with ECS-model of the Bevy Engine.** 
 
 ### Current scope: 
-* `custom_plugins_bevy`  - Rust lib ~ acting as collection of custom plugins to support the mono-repo games.
+* `custom-plugins-bevy`  - Rust lib ~ acting as collection of custom plugins to support the mono-repo games.
 * `v-26-2026` - Scoped in-dev game of the repo (orthographic, fixed-camera).
 * `isosceles-cli` - light-weight CLI tool to support fast game dev.
 * `isosceles-desktop` - tauri-based desktop app ~ possibly expand into an editor for Bevy use-cases.

@@ -2778,7 +2778,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f27ae1dd37df86211c42e150270f82743308803d90a6f6e6651cd730d5e1732f"
 
 [[package]]
-name = "custom_plugins_bevy"
+name = "custom-plugins-bevy"
 version = "0.1.0"
 dependencies = [
  "bevy",
@@ -9182,7 +9182,7 @@ name = "v-26-2026"
 version = "0.1.0"
 dependencies = [
  "bevy",
- "custom_plugins_bevy",
+ "custom-plugins-bevy",
 ]
 
 [[package]]
