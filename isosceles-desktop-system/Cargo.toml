@@ -20,6 +20,7 @@ tauri = { workspace = true, features = [] }
 tauri-plugin-opener = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+tauri-plugin-log = {workspace = true}
 
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration

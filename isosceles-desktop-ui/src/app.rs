@@ -1,3 +1,4 @@
+use leptos::ev::MouseEvent;
 use leptos::task::spawn_local;
 use leptos::{ev::SubmitEvent, prelude::*};
 use serde::{Deserialize, Serialize};
@@ -16,52 +17,49 @@ struct GreetArgs<'a> {
 
 #[component]
 pub fn App() -> impl IntoView {
-    let (name, set_name) = signal(String::new());
-    let (greet_msg, set_greet_msg) = signal(String::new());
-
-    let update_name = move |ev| {
-        let v = event_target_value(&ev);
-        set_name.set(v);
-    };
-
-    let greet = move |ev: SubmitEvent| {
+    let _greet = move |ev: SubmitEvent| {
         ev.prevent_default();
         spawn_local(async move {
-            let name = name.get_untracked();
-            if name.is_empty() {
-                return;
-            }
-
-            let args = serde_wasm_bindgen::to_value(&GreetArgs { name: &name }).unwrap();
+            let args = serde_wasm_bindgen::to_value(&GreetArgs { name: "" }).unwrap();
             // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-            let new_msg = invoke("greet", args).await.as_string().unwrap();
-            set_greet_msg.set(new_msg);
+            let _new_msg = invoke("greet", args).await.as_string().unwrap();
         });
     };
 
+    let _new_click = move |_ev: MouseEvent| {
+        _ev.prevent_default();
+    };
+
     view! {
-        <main class="container">
-            <h1>"Isosceles desktop tool"</h1>
-
-            <div class="row">
-                // <a href="https://tauri.app" target="_blank">
-                //     <img src="public/tauri.svg" class="logo tauri" alt="Tauri logo"/>
-                // </a>
-                // <a href="https://docs.rs/leptos/" target="_blank">
-                //     <img src="public/leptos.svg" class="logo leptos" alt="Leptos logo"/>
-                // </a>
+        <main class="container-fluid min-vh-100 py-4 d-flex flex-column text-center justify-content-center align-items-center">
+            <h1 class="mb-3">"Isosceles desktop tool"</h1>
+            <p class="lead text-muted mb-4">"What are you doing today?"</p>
+            <div class="d-flex gap-2 justify-content-center">
+                <button
+                    class="btn btn-primary btn-lg"
+                    data-bs-toggle="modal"
+                    data-bs-target="#createModal"
+                >
+                    Create New +
+                </button>
+                <button class="btn btn-outline-secondary btn-lg">View existing projects</button>
             </div>
-            <p>"Click on the Tauri and Leptos logos to learn more."</p>
-
-            <form class="row" on:submit=greet>
-                <input
-                    id="greet-input"
-                    placeholder="Enter a name..."
-                    on:input=update_name
-                />
-                <button type="submit">"Greet"</button>
-            </form>
-            <p>{ move || greet_msg.get() }</p>
+            <div class="modal fade" id="createModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">"New Project"</h5>
+                            <button class="btn-close" data-bs-dismiss="modal" />
+                        </div>
+                        <div class="modal-body">"..."</div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                "Cancel"
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     }
 }
