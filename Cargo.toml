@@ -1,7 +1,7 @@
 [workspace]
 # commenting for now due to unused warning.
 # name = "isosceles-games"
-members = ["custom-plugins-bevy", "isosceles-cli", "isosceles-desktop-system", "v-26-2026", "isosceles-desktop-ui"]
+members = ["custom-plugins-bevy", "isosceles-cli", "isosceles-desktop-system", "v-26-2026", "isosceles-desktop-ui", "isosceles-core"]
 resolver = "3"
 
 [workspace.dependencies]
@@ -27,3 +27,4 @@ log = "0.4"
 # Custom plugin is a lib-like custom plugin.
 custom-plugins-bevy = {path = "custom-plugins-bevy"}
 ripgrep = "15.2.0"
+isosceles-core = {path = "isosceles-core"}

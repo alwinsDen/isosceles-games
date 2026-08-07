@@ -4669,9 +4669,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "isosceles-core"
+version = "0.0.1"
+
+[[package]]
 name = "isosceles-desktop-system"
 version = "0.1.0"
 dependencies = [
+ "isosceles-core",
  "serde",
  "serde_json",
  "tauri",
