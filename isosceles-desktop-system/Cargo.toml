@@ -22,12 +22,3 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tauri-plugin-log = {workspace = true}
 isosceles-core = {workspace = true}
-
-
-# Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
-[profile.release]
-codegen-units = 1
-lto = true
-opt-level = 3
-panic = "abort"
-strip = true

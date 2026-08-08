@@ -1,8 +1,12 @@
+mod constants;
+use clap::Parser;
 use color_eyre::{
     Result,
     eyre::{WrapErr, bail},
 };
+use constants::CLI_ART;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
+use isosceles_core::{__core_setup, __core_version};
 use ratatui::{
     DefaultTerminal, Frame,
     buffer::Buffer,
@@ -15,8 +19,6 @@ use ratatui::{
 };
 use ratatui_textarea::TextArea;
 use std::{io, time::Duration};
-mod constants;
-use constants::CLI_ART;
 
 #[derive(Default)]
 pub struct App {
@@ -173,12 +175,49 @@ impl Widget for &App {
     }
 }
 
+#[derive(Parser, Debug)]
+#[command(version, about, long_about= None)]
+struct Args {
+    #[arg(short, long)]
+    test_name: Option<String>,
+
+    #[arg(long)]
+    gui: bool,
+
+    #[arg(long)]
+    list: bool,
+
+    #[arg(long)]
+    core_version: bool,
+
+    #[arg(long)]
+    setup: bool,
+}
+
 fn main() -> io::Result<()> {
     let _ = color_eyre::install();
-    let mut terminal = ratatui::init();
-    let app_result = App::default().run(&mut terminal);
-    ratatui::restore();
-    app_result
+    let args = Args::parse();
+    match args {
+        Args { gui: true, .. } => {
+            let mut terminal = ratatui::init();
+            let app_result = App::default().run(&mut terminal);
+            ratatui::restore();
+            return app_result;
+        }
+        Args {
+            core_version: true, ..
+        } => {
+            println!("{}", __core_version());
+        }
+        Args { setup: true, .. } => {
+            let _ = __core_setup();
+        }
+        _ => {
+            use colored::Colorize;
+            println!("{}", Colorize::red("No flags passed.").bold());
+        }
+    }
+    Ok(())
 }
 
 // _______test section___________

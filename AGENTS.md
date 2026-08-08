@@ -13,7 +13,7 @@ Bevy game monorepo (`isosceles-games`). Rust workspace, edition 2024, resolver "
 ## Critical: local Bevy checkout
 - `bevy = { path = "../bevy", default-features = false }` (root `Cargo.toml`). The repo compiles against a **local** bevy checkout at `../bevy` (version `0.20.0-dev`), NOT crates.io. Never bump bevy to a released version; keep the local checkout up to date.
 - Code targets bevy's unreleased snapshot/ECS-scene API: `bsn_list!`, `SceneList`, `asset_value`, `template_value`, `SpawnListSystem`. Released Bevy tutorials/docs (0.17–0.19) will not compile here; consult `../bevy` source for the real API.
-- Bevy builds from source in debug, so compiles are slow. The `[profile.dev] opt-level` tuning in `v-26-2026/Cargo.toml` is intentionally commented out.
+- Bevy builds from source in debug, so compiles are slow. Build profiles live in the workspace root `Cargo.toml` (`[profile.dev] opt-level = 1` + a tauri-oriented `[profile.release]`); per-package `[profile.*]` tables are ignored by Cargo and only warn, so keep profiles at the root.
 
 ## Layout
 - `custom-plugins-bevy/` — lib crate aggregating reusable plugins; expose new plugins from `src/lib.rs`.

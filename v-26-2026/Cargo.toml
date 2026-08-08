@@ -3,9 +3,6 @@ name = "v-26-2026"
 version = "0.1.0"
 edition = "2024"
 
-[profile.dev]
-opt-level = 1
-
 [dependencies]
 bevy = { workspace = true, features = ["3d"] }
 custom-plugins-bevy = {workspace = true}

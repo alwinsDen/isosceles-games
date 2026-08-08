@@ -65,6 +65,9 @@ pub fn App() -> impl IntoView {
                     View existing projects
                 </button>
             </div>
+            <div>
+                <button class="btn btn-link p-0 mt-4">"<or> clone repository"</button>
+            </div>
             <div class="modal fade" id="createModal" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">

@@ -1,8 +1,8 @@
-use isosceles_core::_core_version_details;
+use isosceles_core::__core_version_details;
 
 #[tauri::command]
 fn _dk_list_apps() -> &'static [&'static str] {
-    return _core_version_details();
+    return __core_version_details();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
